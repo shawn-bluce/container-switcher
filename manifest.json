@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_extName__",
   "short_name": "Containers",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "__MSG_extDesc__",
   "default_locale": "zh_CN",
   "browser_specific_settings": {
