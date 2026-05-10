@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title data-i18n="extName">Container Switcher</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <label class="toggle">
+    <input type="checkbox" id="global-enabled">
+    <span class="toggle-track" aria-hidden="true"></span>
+    <span class="toggle-label" data-i18n="globalEnabled">启用扩展</span>
+  </label>
+
+  <div id="disabled-banner" hidden data-i18n="popupDisabled">已临时禁用</div>
+
+  <div class="card">
+    <div class="row">
+      <span class="label" data-i18n="popupHost">站点</span>
+      <span id="host" class="val">—</span>
+    </div>
+    <div class="row">
+      <span class="label" data-i18n="popupContainer">当前 container</span>
+      <span id="container" class="val">—</span>
+    </div>
+    <div class="row">
+      <span class="label" data-i18n="popupMatch">命中规则</span>
+      <span id="match" class="val">—</span>
+    </div>
+  </div>
+  <div class="actions">
+    <button id="add-rule" class="primary" data-i18n="popupAddRule">为该域名添加规则</button>
+    <button id="open-options" data-i18n="popupOpenOpts">打开规则设置</button>
+  </div>
+
+  <script src="../lib/i18n.js"></script>
+  <script src="../lib/storage.js"></script>
+  <script src="../lib/matcher.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

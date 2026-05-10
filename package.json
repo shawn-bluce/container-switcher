@@ -1,0 +1,15 @@
+{
+  "name": "container-switcher",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Firefox extension that auto-switches containers based on rules.",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "lint": "web-ext lint --source-dir . --self-hosted",
+    "build": "web-ext build --source-dir . --artifacts-dir dist --overwrite-dest --ignore-files 'test/**' 'package.json' 'package-lock.json' 'node_modules/**' 'dist/**' '.git/**' '.github/**' '.gitignore' 'README.md'",
+    "run": "web-ext run --source-dir . --keep-profile-changes"
+  },
+  "devDependencies": {
+    "web-ext": "^7.11.0"
+  }
+}

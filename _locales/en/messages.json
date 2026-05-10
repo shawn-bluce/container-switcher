@@ -1,0 +1,65 @@
+{
+  "extName":  { "message": "Container Switcher" },
+  "extDesc":  { "message": "Auto-open URLs in matching Firefox containers based on domain / path / regex rules." },
+
+  "optionsTitle": { "message": "Container Switcher · Rules" },
+  "header":       { "message": "Container Switcher" },
+  "headerHint":   { "message": "Rules are matched top-down; the first match wins. The Pattern field accepts multiple lines — any one matching counts as a match for that row. Container names refer to Firefox containers; missing ones are created on first use." },
+
+  "globalEnabled":     { "message": "Enable extension" },
+  "globalEnabledHint": { "message": "When off, no rule and no default container apply — effectively pauses the extension." },
+
+  "defaultContainer":     { "message": "Default container" },
+  "defaultContainerHint": { "message": "Used when no rule matches and the tab has no explicit container; will not override a tab's manual container choice." },
+
+  "colEnabled":   { "message": "On" },
+  "colType":      { "message": "Type" },
+  "colPattern":   { "message": "Pattern" },
+  "colContainer": { "message": "Container" },
+  "colHandle":    { "message": "Drag to reorder" },
+  "dragHandle":   { "message": "Drag to reorder" },
+
+  "empty":   { "message": "No rules yet — click the button below to add one." },
+  "addRule": { "message": "+ Add rule" },
+  "delete":  { "message": "Delete" },
+  "saved":   { "message": "Saved" },
+
+  "ruleDeleted": { "message": "Rule deleted" },
+  "undo":        { "message": "Undo" },
+
+  "exportRules":      { "message": "Export JSON" },
+  "importRules":      { "message": "Import JSON" },
+  "importInvalid":    { "message": "Import failed: not a valid Container Switcher config" },
+  "importConfirm":    { "message": "Import will overwrite all rules, default container and toggle state. Continue?" },
+
+  "selectContainer":      { "message": "— Select container —" },
+  "noContainer":          { "message": "(none)" },
+  "newContainer":         { "message": "+ New container…" },
+  "containerDeleted":     { "message": "$1 (deleted)" },
+  "newContainerPrompt":   { "message": "Name for the new container" },
+  "createContainerFail":  { "message": "Failed to create container: $1" },
+  "containerNamePh":      { "message": "Container name (e.g. Work)" },
+
+  "examplesHeader":     { "message": "Pattern examples" },
+  "exampleDomainDesc":  { "message": "All Atlassian Cloud apps (Jira / Confluence / etc.) on the same account" },
+  "examplePathDesc":    { "message": "Every repo under a single GitHub organization — useful for routing work code into a Work container" },
+  "exampleRegexDesc":   { "message": "Local dev URLs on any port (http/https, port optional)" },
+
+  "patternPhDomain": { "message": "example.com or *.example.com" },
+  "patternPhPath":   { "message": "example.com/admin/*" },
+  "patternPhRegex":  { "message": "^https://[^/]+\\.corp\\.local/" },
+
+  "popupHost":      { "message": "Site" },
+  "popupContainer": { "message": "Current container" },
+  "popupMatch":     { "message": "Matched rule" },
+  "popupNone":      { "message": "None" },
+  "popupDefault":   { "message": "default" },
+  "popupNonHttp":   { "message": "(non-http(s) page)" },
+  "popupAddRule":   { "message": "Add rule for this domain" },
+  "popupOpenOpts":  { "message": "Open settings" },
+  "popupDisabled":  { "message": "Temporarily disabled — no container switching" },
+
+  "matcherEmptyPattern":   { "message": "At least one pattern is required" },
+  "matcherEmptyContainer": { "message": "Container cannot be empty" },
+  "matcherInvalidRegex":   { "message": "Invalid regex: $1" }
+}

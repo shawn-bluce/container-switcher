@@ -1,0 +1,65 @@
+{
+  "extName":  { "message": "Container Switcher" },
+  "extDesc":  { "message": "根据 domain / path / regex 规则,自动在对应的 Firefox container 中打开页面。" },
+
+  "optionsTitle": { "message": "Container Switcher · 规则" },
+  "header":       { "message": "Container Switcher" },
+  "headerHint":   { "message": "规则按列表顺序匹配,首条命中决定使用的 container。同一行的「模式」可换行写多个,任一命中即视为该行匹配。container 名称对应 Firefox 中的容器名;未存在的会在首次命中时自动创建。" },
+
+  "globalEnabled":     { "message": "启用扩展" },
+  "globalEnabledHint": { "message": "关闭后所有规则与默认 container 都不会生效,等同于临时禁用整个扩展。" },
+
+  "defaultContainer":     { "message": "默认 container" },
+  "defaultContainerHint": { "message": "无规则命中且当前 tab 处于「无 container」时使用;不会覆盖手动选定的 container。" },
+
+  "colEnabled":   { "message": "启用" },
+  "colType":      { "message": "类型" },
+  "colPattern":   { "message": "模式" },
+  "colContainer": { "message": "Container" },
+  "colHandle":    { "message": "拖拽排序" },
+  "dragHandle":   { "message": "拖动以调整顺序" },
+
+  "empty":   { "message": "暂无规则,点击下方按钮添加。" },
+  "addRule": { "message": "+ 添加规则" },
+  "delete":  { "message": "删除" },
+  "saved":   { "message": "已保存" },
+
+  "ruleDeleted": { "message": "已删除规则" },
+  "undo":        { "message": "撤销" },
+
+  "exportRules":      { "message": "导出 JSON" },
+  "importRules":      { "message": "导入 JSON" },
+  "importInvalid":    { "message": "导入失败:文件不是有效的 Container Switcher 配置" },
+  "importConfirm":    { "message": "导入将覆盖当前所有规则、默认 container 与开关状态,继续吗?" },
+
+  "selectContainer":      { "message": "— 选择 container —" },
+  "noContainer":          { "message": "(不使用)" },
+  "newContainer":         { "message": "+ 新建 container…" },
+  "containerDeleted":     { "message": "$1(已删除)" },
+  "newContainerPrompt":   { "message": "新 container 名称" },
+  "createContainerFail":  { "message": "创建 container 失败:$1" },
+  "containerNamePh":      { "message": "container 名称(如 Work)" },
+
+  "examplesHeader":     { "message": "规则示例" },
+  "exampleDomainDesc":  { "message": "Atlassian Cloud 全家桶(Jira / Confluence 等子域同账号)" },
+  "examplePathDesc":    { "message": "GitHub 上某组织名下的所有仓库,公开分享时切到 Work container" },
+  "exampleRegexDesc":   { "message": "本地开发地址,任意端口都命中(http/https / 是否带 :port 都一致处理)" },
+
+  "patternPhDomain": { "message": "example.com 或 *.example.com" },
+  "patternPhPath":   { "message": "example.com/admin/*" },
+  "patternPhRegex":  { "message": "^https://[^/]+\\.corp\\.local/" },
+
+  "popupHost":      { "message": "站点" },
+  "popupContainer": { "message": "当前 container" },
+  "popupMatch":     { "message": "命中规则" },
+  "popupNone":      { "message": "无" },
+  "popupDefault":   { "message": "默认" },
+  "popupNonHttp":   { "message": "(非 http(s) 页面)" },
+  "popupAddRule":   { "message": "为该域名添加规则" },
+  "popupOpenOpts":  { "message": "打开规则设置" },
+  "popupDisabled":  { "message": "已临时禁用 — 当前不会切换 container" },
+
+  "matcherEmptyPattern":   { "message": "至少填一行模式" },
+  "matcherEmptyContainer": { "message": "container 不能为空" },
+  "matcherInvalidRegex":   { "message": "正则无效:$1" }
+}

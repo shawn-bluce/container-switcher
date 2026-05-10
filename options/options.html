@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title data-i18n="optionsTitle">Container Switcher · 规则</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <header>
+    <h1 data-i18n="header">Container Switcher</h1>
+    <p class="hint" data-i18n="headerHint"></p>
+
+    <div class="config-grid">
+      <div class="config-row">
+        <label for="global-enabled" data-i18n="globalEnabled">启用扩展</label>
+        <label class="toggle">
+          <input type="checkbox" id="global-enabled">
+          <span class="toggle-track" aria-hidden="true"></span>
+        </label>
+        <span class="hint-sm" data-i18n="globalEnabledHint"></span>
+      </div>
+
+      <div class="config-row">
+        <label for="default-container" data-i18n="defaultContainer">默认 container</label>
+        <select id="default-container"></select>
+        <span class="hint-sm" data-i18n="defaultContainerHint"></span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <table id="rules-table">
+      <thead>
+        <tr>
+          <th class="col-handle" data-i18n-aria="colHandle"></th>
+          <th class="col-enabled" data-i18n="colEnabled">启用</th>
+          <th class="col-type" data-i18n="colType">类型</th>
+          <th class="col-pattern" data-i18n="colPattern">模式</th>
+          <th class="col-container" data-i18n="colContainer">Container</th>
+          <th class="col-actions"></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <p id="empty" hidden data-i18n="empty"></p>
+
+    <div class="toolbar">
+      <button id="add-rule" class="primary" data-i18n="addRule">+ 添加规则</button>
+      <button id="export-rules" data-i18n="exportRules">导出 JSON</button>
+      <button id="import-rules" data-i18n="importRules">导入 JSON</button>
+      <input type="file" id="import-file" accept="application/json,.json" hidden>
+      <span id="status" aria-live="polite"></span>
+    </div>
+
+    <section class="docs">
+      <h2 data-i18n="examplesHeader">规则示例</h2>
+      <ul>
+        <li><code>domain</code> · <code>*.atlassian.net</code> — <span data-i18n="exampleDomainDesc"></span></li>
+        <li><code>path</code> · <code>github.com/your-org/*</code> — <span data-i18n="examplePathDesc"></span></li>
+        <li><code>regex</code> · <code>^https?://localhost(?::\d+)?/</code> — <span data-i18n="exampleRegexDesc"></span></li>
+      </ul>
+    </section>
+  </main>
+
+  <div id="undo-toast" class="toast" hidden>
+    <span id="undo-text"></span>
+    <button id="undo-btn" data-i18n="undo">撤销</button>
+  </div>
+
+  <script src="../lib/i18n.js"></script>
+  <script src="../lib/storage.js"></script>
+  <script src="../lib/matcher.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
