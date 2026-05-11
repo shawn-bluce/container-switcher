@@ -18,12 +18,16 @@ Manifest V3,Firefox 128+。
 
 `webRequest.onBeforeRequest` 阻塞监听。每次顶层 `main_frame` 请求:
 
-1. 当前 tab **不在** `firefox-default` 状态(即已被规则、其他扩展或用户「Reopen in Container」放进某个具名 container)→ **放行**,保留用户/前次的选择
+1. 当前 tab 已在某具名 container,且满足下列任一 → **放行**,尊重用户的容器选择:
+   - tab 当前停在 `about:blank` / `about:newtab` 等空白页 —— 这是「Open in new container tab」/「Reopen in Container」刚建出来的 tab 的特征
+   - `details.originUrl` 已设置 —— 即页面内链接点击,不应被规则拉出当前 container
 2. 规则命中 → 在规则指定的 container 重开 tab,取消原请求
-3. 无规则但设置了「默认 container」→ 在默认 container 重开
+3. 无规则但设置了「默认 container」**且** tab 处于 `firefox-default` → 在默认 container 重开
 4. 否则放行
 
-源 tab 仅在内容是 `about:newtab` / `about:blank` 等空白页时关闭,否则保留 —— 避免点链接切换 container 时把已有的浏览历史一并丢掉。
+也就是说: URL 地址栏输入、书签、历史等 chrome 行为在已具名容器的 tab 里依然会触发规则切换;但页面内链接点击和「在新容器 tab 打开」的初始导航不会被规则覆盖。
+
+源 tab 仅在内容是 `about:newtab` / `about:blank` 等空白页时关闭,否则保留 —— 避免切容器时把已有的浏览历史一并丢掉。
 
 ## 目录结构
 

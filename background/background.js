@@ -2,18 +2,24 @@
 
 // Top-level navigation interceptor.
 //
-// Strategy: on a main_frame request, look up the first matching rule. If no
-// rule matches and the tab is currently in the no-container default
-// (cookieStoreId === "firefox-default"), fall back to the user's configured
-// default container. Once a target container is decided, cancel the request,
-// open a new tab with the same URL inside that container, and only close the
-// original tab if it was a fresh tab (about:newtab/about:blank/empty) — that
-// way we don't blow away the user's existing browsing history when they
-// click a link that needs a different container.
+// On a main_frame request, look up the first matching rule. If no rule
+// matches, optionally fall back to the user's default container. Once we
+// have a target container we cancel the request, open a new tab with the
+// URL inside that container, and only close the source tab if it was
+// blank — so user history on real pages is preserved.
 //
-// We deliberately do NOT override an explicit container choice (e.g. a tab
-// the user manually opened in "Banking") with the default — only rules win
-// against an explicit container.
+// The non-obvious bit is when to respect an existing container choice on
+// the tab. Two cases:
+//
+//   - Fresh tab in a named container (tab.url is about:blank/about:newtab)
+//     → user just did "Open in new container tab" or "Reopen in Container".
+//     Honor their choice, don't yank them to a rule's container.
+//   - Navigation triggered from within a page (details.originUrl is set)
+//     → an in-page link click in a container tab. The user is browsing
+//     inside that container on purpose; don't yank them out.
+//
+// Anything else navigating in a named container — URL bar, bookmarks,
+// history — is treated like a regular navigation and the rule applies.
 
 const FIREFOX_DEFAULT = "firefox-default";
 const BLANK_URLS = new Set([
@@ -69,14 +75,23 @@ async function handleRequest(details) {
   try {
     const tab = await browser.tabs.get(details.tabId);
 
-    // We only intervene on tabs in the no-container default state. Once a
-    // tab has been placed in a named container — by us on a prior request,
-    // by the user via "Reopen in Container", or by another extension —
-    // that placement is treated as an explicit choice and respected for
-    // subsequent navigations. Both rules and the default-container fallback
-    // honor this guard; otherwise rules would yank manually-moved tabs
-    // back to their original target on the very next navigation.
-    if (tab.cookieStoreId !== FIREFOX_DEFAULT) return {};
+    // When the tab is already in a named container, we step back — i.e.
+    // honor the existing placement — in two specific situations:
+    //   (a) The tab is "fresh" (still on about:blank / about:newtab),
+    //       which is the signature of "Open in new container tab" /
+    //       "Reopen in Container" right after the new tab is created.
+    //   (b) The navigation was triggered from within a page (a link
+    //       click), surfaced as a non-empty `details.originUrl`. The user
+    //       picked the container for this tab on purpose; in-page links
+    //       shouldn't yank them out of it.
+    // Outside of these two, a navigation in a non-default container —
+    // typed URL, bookmark, history pick — is treated like any other and
+    // the rule fires normally.
+    if (tab.cookieStoreId !== FIREFOX_DEFAULT) {
+      const isFreshTab = BLANK_URLS.has(tab.url || "");
+      const isInPageNav = !!details.originUrl;
+      if (isFreshTab || isInPageNav) return {};
+    }
 
     const targetName = rule ? rule.container : defaultContainer;
     const container = await Containers.ensure(targetName);
@@ -102,9 +117,19 @@ async function handleRequest(details) {
 
     // Only close the source tab when it has no meaningful content. This
     // preserves the user's existing tab history if they clicked a link from
-    // a real page that needed a different container.
+    // a real page that needed a different container. Awaited so the
+    // removal completes before we cancel; the previous fire-and-forget
+    // could race with the cancel teardown and leave the empty source tab
+    // dangling, producing the "two tabs after empty-tab search" symptom.
     if (BLANK_URLS.has(tab.url || "")) {
-      browser.tabs.remove(details.tabId).catch(() => {});
+      try {
+        await browser.tabs.remove(details.tabId);
+      } catch (e) {
+        console.warn(
+          "[container-switcher] could not close source tab",
+          details.tabId, tab.url, e
+        );
+      }
     }
 
     return { cancel: true };
