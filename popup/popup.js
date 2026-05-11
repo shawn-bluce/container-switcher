@@ -59,13 +59,13 @@
   addBtn.addEventListener("click", async () => {
     if (!url) return;
     const rules = await Storage.loadRules();
-    rules.push({
+    rules.push(Storage.normalizeRule({
       id: Storage.newId(),
       type: "domain",
       patterns: [url.hostname],
       container: "",
       enabled: true,
-    });
+    }));
     await Storage.saveRules(rules);
     await browser.runtime.openOptionsPage();
     window.close();

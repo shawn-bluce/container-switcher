@@ -80,13 +80,17 @@
   });
 
   document.getElementById("add-rule").addEventListener("click", () => {
-    rules.push({
+    // Build via normalizeRule so the in-memory rule has the same property
+    // order as what Storage.onRulesChanged delivers; otherwise our
+    // lastSavedJSON guard misfires and re-renders the textarea on every
+    // self-save, eating trailing newlines and breaking multi-line input.
+    rules.push(Storage.normalizeRule({
       id: Storage.newId(),
       type: "domain",
       patterns: [],
       container: "",
       enabled: true,
-    });
+    }));
     render();
     persist();
     focusLastPattern();
