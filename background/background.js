@@ -69,9 +69,14 @@ async function handleRequest(details) {
   try {
     const tab = await browser.tabs.get(details.tabId);
 
-    // Default container only kicks in for tabs that haven't been explicitly
-    // assigned one. Rules always win.
-    if (!rule && tab.cookieStoreId !== FIREFOX_DEFAULT) return {};
+    // We only intervene on tabs in the no-container default state. Once a
+    // tab has been placed in a named container — by us on a prior request,
+    // by the user via "Reopen in Container", or by another extension —
+    // that placement is treated as an explicit choice and respected for
+    // subsequent navigations. Both rules and the default-container fallback
+    // honor this guard; otherwise rules would yank manually-moved tabs
+    // back to their original target on the very next navigation.
+    if (tab.cookieStoreId !== FIREFOX_DEFAULT) return {};
 
     const targetName = rule ? rule.container : defaultContainer;
     const container = await Containers.ensure(targetName);

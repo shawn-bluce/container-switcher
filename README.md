@@ -16,11 +16,12 @@ Manifest V3,Firefox 128+。
 
 ## 工作原理
 
-`webRequest.onBeforeRequest` 阻塞监听。每次顶层 `main_frame` 请求按规则顺序匹配:
+`webRequest.onBeforeRequest` 阻塞监听。每次顶层 `main_frame` 请求:
 
-1. 规则命中 → 在目标 container 重开 tab,取消原请求
-2. 否则若设置了「默认 container」**且**当前 tab 处于 `firefox-default` → 在默认 container 重开
-3. 否则放行
+1. 当前 tab **不在** `firefox-default` 状态(即已被规则、其他扩展或用户「Reopen in Container」放进某个具名 container)→ **放行**,保留用户/前次的选择
+2. 规则命中 → 在规则指定的 container 重开 tab,取消原请求
+3. 无规则但设置了「默认 container」→ 在默认 container 重开
+4. 否则放行
 
 源 tab 仅在内容是 `about:newtab` / `about:blank` 等空白页时关闭,否则保留 —— 避免点链接切换 container 时把已有的浏览历史一并丢掉。
 
