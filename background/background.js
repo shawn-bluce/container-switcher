@@ -30,6 +30,16 @@ let rules = [];
 let defaultContainer = "";
 let enabled = true;
 let configReady = false;
+// Resolved by init() (always, even on failure) so requests arriving during
+// event-page wake-up can await config instead of getting let through
+// unrouted. Without this, the first request after Firefox revives the
+// background page races init(): the listener fires, configReady is still
+// false, we return {} and the navigation lands in firefox-default; a manual
+// refresh hits a now-ready handler and routes correctly. The webRequest
+// blocking listener accepts a Promise, so awaiting here actually holds the
+// request rather than dropping it.
+let resolveConfigReady;
+const configReadyPromise = new Promise((r) => { resolveConfigReady = r; });
 
 // tabId -> URL we just opened that tab with. The newly created tab's own
 // first main_frame request re-enters handleRequest in parallel with us still
@@ -57,7 +67,6 @@ browser.webRequest.onBeforeRequest.addListener(
     rules = cfg.rules;
     defaultContainer = cfg.defaultContainer;
     enabled = cfg.enabled;
-    configReady = true;
     Storage.onRulesChanged((next) => { rules = next; });
     Storage.onDefaultContainerChanged((next) => { defaultContainer = next; });
     Storage.onEnabledChanged((next) => { enabled = next; });
@@ -67,12 +76,16 @@ browser.webRequest.onBeforeRequest.addListener(
     );
   } catch (e) {
     console.error("[container-switcher] init failed", e);
+  } finally {
+    configReady = true;
+    resolveConfigReady();
   }
 })();
 
 async function handleRequest(details) {
-  if (!configReady || !enabled) return {};
   if (details.tabId < 0) return {};
+  if (!configReady) await configReadyPromise;
+  if (!enabled) return {};
 
   const expected = justOpened.get(details.tabId);
   if (expected === details.url) {

@@ -61,4 +61,3 @@ icons/                 占位 SVG
 
 - 切换 tab 时新建+(可选)关闭原 tab,前向历史会丢
 - 仅拦截 `main_frame`,iframe 内导航不切换
-- MV3 event page 模型下,扩展空闲一段时间会被 Firefox 卸载,极少数恰好在唤醒前若干毫秒到达的请求可能漏处理(`webRequest` listener 在脚本顶层同步注册以让 Firefox 能正确唤醒)
