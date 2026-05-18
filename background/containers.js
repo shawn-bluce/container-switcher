@@ -20,16 +20,35 @@ const Containers = (() => {
     return list[0] || null;
   }
 
+  // Dedupe concurrent ensure() calls for the same name: findByName + create
+  // is not atomic, so without this, two parallel callers (e.g. the source-tab
+  // request and the freshly-opened tab's own first request) can both miss the
+  // existing container and each create a new duplicate with the same name but
+  // a different cookieStoreId — which then defeats background.js's
+  // "already in target container" short-circuit and produces a cascade of
+  // extra tabs.
+  const pending = new Map();
+
   async function ensure(name) {
     const trimmed = String(name || "").trim();
     if (!trimmed) return null;
-    const existing = await findByName(trimmed);
-    if (existing) return existing;
-    return browser.contextualIdentities.create({
-      name: trimmed,
-      color: colorFor(trimmed),
-      icon: DEFAULT_ICON,
-    });
+    const inflight = pending.get(trimmed);
+    if (inflight) return inflight;
+    const p = (async () => {
+      const existing = await findByName(trimmed);
+      if (existing) return existing;
+      return browser.contextualIdentities.create({
+        name: trimmed,
+        color: colorFor(trimmed),
+        icon: DEFAULT_ICON,
+      });
+    })();
+    pending.set(trimmed, p);
+    try {
+      return await p;
+    } finally {
+      pending.delete(trimmed);
+    }
   }
 
   async function list() {

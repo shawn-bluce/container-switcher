@@ -31,6 +31,17 @@ let defaultContainer = "";
 let enabled = true;
 let configReady = false;
 
+// tabId -> URL we just opened that tab with. The newly created tab's own
+// first main_frame request re-enters handleRequest in parallel with us still
+// awaiting tabs.create/remove; if its tab.url has already advanced past
+// about:blank by the time we look, the fresh-tab guard misses and we'd
+// route it again — sometimes into a freshly-duplicated container — leaving
+// 2 or 3 tabs in the default container after a single search. Marking the
+// tab here and short-circuiting on its first request is the reliable
+// signal; tab.url timing is not.
+const justOpened = new Map();
+const JUST_OPENED_TTL_MS = 10_000;
+
 // Register synchronously so requests during startup are short-circuited
 // rather than missed; also required so Firefox can wake up the event page
 // after idle and re-attach the listener.
@@ -62,6 +73,12 @@ browser.webRequest.onBeforeRequest.addListener(
 async function handleRequest(details) {
   if (!configReady || !enabled) return {};
   if (details.tabId < 0) return {};
+
+  const expected = justOpened.get(details.tabId);
+  if (expected === details.url) {
+    justOpened.delete(details.tabId);
+    return {};
+  }
 
   let url;
   try { url = new URL(details.url); } catch (_) { return {}; }
@@ -107,13 +124,15 @@ async function handleRequest(details) {
       rule ? `${rule.type} ${Matcher.patternsOf(rule).join("|")}` : "default"
     );
 
-    await browser.tabs.create({
+    const opened = await browser.tabs.create({
       url: details.url,
       cookieStoreId: container.cookieStoreId,
       active: tab.active,
       index: tab.index + 1,
       windowId: tab.windowId,
     });
+    justOpened.set(opened.id, details.url);
+    setTimeout(() => justOpened.delete(opened.id), JUST_OPENED_TTL_MS);
 
     // Only close the source tab when it has no meaningful content. This
     // preserves the user's existing tab history if they clicked a link from
